@@ -29,11 +29,11 @@ def main():
                 id_ativo = int(input("ID Único (Inteiro): "))
                 hostname = input("Hostname/Nome: ").strip()
                 responsavel = input("Responsável: ").strip()
-                localizacao = input("Setor/Localização: ").strip
+                localizacao = input("Setor/Localização: ").strip()
 
-                print("\Categortias disponíveis")
+                print("\Categorias disponíveis")
                 for tipo in TipoAtivo:
-                    print(f" {tipo.value}^- {tipo.name}")
+                    print(f" {tipo.value} - {tipo.name}")
 
                 codigo_tipo = int(input("Escolha o código do tipo de ativo: "))
                 tipo_ativo = TipoAtivo(codigo_tipo)
@@ -63,7 +63,7 @@ def main():
                     print("Erro: O ID deve ser um número inteiro.")
             elif sub_opcao == "2":
                 host_busca = input("Digite o Hostname: ").strip()
-                ativo = asset.service.buscar_por_hostname(host_busca)
+                ativo = asset_service.buscar_por_hostname(host_busca)
                 if ativo:
                     print(f"\nAchou! ID: {ativo.id} | Hostname: {ativo.hostname} | Responsável: {ativo.responsavel} | Localização: {ativo.localizacao} | Tipo: {ativo.tipo.name}")
                 else:
