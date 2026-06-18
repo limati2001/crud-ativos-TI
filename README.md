@@ -4,7 +4,7 @@ CRUD de ativos de TI e vulnerabilidades em Python
 
 ## Como executar
 ```bash
-python main.py
+python3 main.py
 ```
 
 ## Requisitos
