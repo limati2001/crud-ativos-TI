@@ -14,31 +14,50 @@ class AssetService:
         self._load_from_file()
 
     def _load_from_file(self):
+        """Carrega os ativos e reconstrói as vulnerabilidades a partir do arquivo (Requisito 3, 7 e 9)."""
+        import os
+        from models.asset import AtivoTI, TipoAtivo
+        from models.vulnerability import Vulnerabilidade
+
         if not os.path.exists(self.file_path):
             return
-        
-        with open(self.file_path, "r", encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if not line:
-                    continue
 
-                #ex. de linha separada por ";"
-                #id;hostname;responsavel;localizacao;codigo_tipo
-                parts = line.split(";")
-                if len(parts) >=5:
-                    id_ativo = int(parts[0])
-                    hostname = parts[1]
-                    responsavel = parts[2]
-                    localizacao = parts[3]
-                    codigo_tipo = int(parts[4])
-
-                #reconstrói o enum tipo ativo a partir do código inteiro
-                tipo = TipoAtivo(codigo_tipo)
-
-                #cria o objeto e adiciona no dicionário indexado
-                ativo = AtivoTI(id_ativo, hostname, responsavel, localizacao, tipo)
-                self.assets_indexed[id_ativo] = ativo
+        try:
+            with open(self.file_path, "r", encoding="utf-8") as f:
+                for linha in f:
+                    linha = linha.strip()
+                    if not linha:
+                        continue
+                    
+                    partes = linha.split(";")
+                    # Uma linha válida de ativo básico precisa de pelo menos 5 campos + campo de vulnerabilidade
+                    if len(partes) < 5:
+                        continue
+                        
+                    id_ativo = int(partes[0])
+                    hostname = partes[1]
+                    responsavel = partes[2]
+                    localizacao = partes[3]
+                    tipo = TipoAtivo(int(partes[4]))
+                    
+                    # Cria o objeto Ativo de TI
+                    ativo = AtivoTI(id_ativo, hostname, responsavel, localizacao, tipo)
+                    
+                    # Verifica se existem vulnerabilidades registradas nessa linha (campo após o índice 4)
+                    if len(partes) > 5 and partes[5]:
+                        vulns_brutas = partes[5].split("::")
+                        for vuln_str in vulns_brutas:
+                            dados_v = vuln_str.split("||")
+                            if len(dados_v) == 4:
+                                desc, cat, sev, stat = dados_v
+                                nova_vuln = Vulnerabilidade(desc, cat, sev, stat)
+                                ativo.adicionar_vulnerabilidade(nova_vuln)
+                    
+                    # Alimenta os nossos dicionários de busca rápida em memória (Requisito 9)
+                    self.assets_indexed[id_ativo] = ativo
+                    self.assets_by_hostname[hostname.lower()] = ativo
+        except Exception as e:
+            print(f"Aviso: Erro ao carregar a base de dados em texto: {e}")
     
     def _save_to_file(self):
         """Salva todos os ativos e suas vulnerabilidades no arquivo de texto (Requisito 3 e 7)."""
