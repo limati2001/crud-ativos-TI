@@ -88,6 +88,19 @@ class AssetService:
         self._save_to_file()
         print(f"Ativo ID {id_ativo} atualizado com sucesso!")
         return True
+    
+    def deletar_ativo(self, id_ativo: int) -> bool:
+        if id_ativo not in self.assets_indexed:
+            print(f"Erro: ativo com ID {id_ativo} não existe na base de dados!")
+            return False
+        
+        #remove do dicionário indexado
+        del self.assets_indexed[id_ativo]
+
+        #reescreve o arquivo de texto sem o ativo deletado
+        self._save_to_file()
+        print(f"Ativo ID {id_ativo} e suas vulnerabilidades foram removidos com sucesso!")
+        return True
 
 
     
