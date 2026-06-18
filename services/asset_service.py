@@ -41,10 +41,31 @@ class AssetService:
                 self.assets_indexed[id_ativo] = ativo
     
     def _save_to_file(self):
+        """Salva todos os ativos e suas vulnerabilidades no arquivo de texto (Requisito 3 e 7)."""
+        import os
+        # Garante que a pasta 'data' existe
+        os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
+        
         with open(self.file_path, "w", encoding="utf-8") as f:
             for ativo in self.assets_indexed.values():
-                line = f"{ativo.id};{ativo.hostname};{ativo.responsavel};{ativo.localizacao};{ativo.tipo.value}\n"
-                f.write(line)
+                # 1 cria a string com os dados básicos do Ativo
+                linha_ativo = f"{ativo.id};{ativo.hostname};{ativo.responsavel};{ativo.localizacao};{ativo.tipo.value}"
+                
+                # 2 transforma a lista de vulnerabilidades em texto serializado
+                lista_vulns_str = []
+                for v in ativo.vulnerabilidades:
+                    # Usamos '||' para separar os campos de uma única vulnerabilidade
+                    vuln_formatada = f"{v.descricao}||{v.categoria}||{v.severidade}||{v.status}"
+                    lista_vulns_str.append(vuln_formatada)
+                
+                # unir todas as vulnerabilidades usando '::' como separador entre elas
+                vulnerabilidades_serializadas = "::".join(lista_vulns_str)
+                
+                # 3 junta tudo na linha final do arquivo
+                if vulnerabilidades_serializadas:
+                    f.write(f"{linha_ativo};{vulnerabilidades_serializadas}\n")
+                else:
+                    f.write(f"{linha_ativo};\n")  # Ponto e vírgula no fim indica lista vazia
 
     def cadastrar_ativo(self, id_ativo:int, hostname: str, responsavel: str, localizacao: str, tipo: TipoAtivo) -> bool:
         if id_ativo in self.assets_indexed:
