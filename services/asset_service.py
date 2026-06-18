@@ -69,3 +69,25 @@ class AssetService:
                 return ativo
         return None
     
+
+    def atualizar_ativo(self, id_ativo: int, novo_hostname: str, novo_responsavel: str, nova_localizacao: str, novo_tipo:TipoAtivo) -> bool:
+        ativo = self.buscar_por_id(id_ativo)
+
+        if not ativo:
+            print(f"Erro: Ativo com ID {id_ativo} não foi encontrado para atualização!")
+            return False
+        
+        #atualiza os dados do objeto na memória
+
+        ativo.hostname = novo_hostname
+        ativo.responsavel = novo_responsavel
+        ativo.localizacao = nova_localizacao
+        ativo.tipo = novo_tipo
+
+        #persiste a alteração no arquivo de texto (Pré-SQLite!)
+        self._save_to_file()
+        print(f"Ativo ID {id_ativo} atualizado com sucesso!")
+        return True
+
+
+    
