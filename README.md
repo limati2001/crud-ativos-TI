@@ -2,9 +2,14 @@
 
 CRUD de ativos de TI e vulnerabilidades em Python
 
-## Como executar
+## Como executar (no Linux)
 ```bash
 python3 main.py
+```
+
+## Como executar (no Windows)
+```bash
+python main.py
 ```
 
 ## Requisitos
