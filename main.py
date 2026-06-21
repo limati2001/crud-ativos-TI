@@ -31,7 +31,7 @@ def main():
                 responsavel = input("Responsável: ").strip()
                 localizacao = input("Setor/Localização: ").strip()
 
-                print("\Categorias disponíveis")
+                print("\nCategorias disponíveis")
                 for tipo in TipoAtivo:
                     print(f" {tipo.value} - {tipo.name}")
 
